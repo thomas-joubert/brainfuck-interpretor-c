@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-std=c99 -pedantic -Werror -Wall -Wextra
 
-OBJS=src/main.o src/utils.o src/interpretor.o
+OBJS=src/main.o src/utils.o src/lexer.o
 BIN=interpretor
 
 all: $(OBJS)
