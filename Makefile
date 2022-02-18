@@ -7,7 +7,7 @@ BIN=interpretor
 all: $(OBJS)
 	$(CC) $(OBJS) -o $(BIN)
 
-check:
+check: all
 	./tests/testsuite.sh
 
 clean:

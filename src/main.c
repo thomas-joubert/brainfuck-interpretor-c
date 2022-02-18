@@ -2,7 +2,7 @@
 #include <err.h>
 
 #include "utils.h"
-#include "interpretor.h"
+#include "lexer.h"
 
 int main(int argc, char **argv)
 {
@@ -16,9 +16,9 @@ int main(int argc, char **argv)
     FILE *code = xfopen(argv[1], "r");
 
     char curr = 0;
-    while ((curr = lexer(code, &cursor)) != EOF);
+    while ((curr = lexer(code, &cursor)) != EOF_TOK);
 
-    fclose (code);
+    fclose(code);
 
     return 0;
 }
