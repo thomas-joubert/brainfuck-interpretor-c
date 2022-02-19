@@ -1,8 +1,6 @@
 #include "lexer.h"
 
-char memory[30000] = { 0 };
-
-char available_tokens[8] = {
+static char available_tokens[8] = {
     '>',
     '<',
     '+',
@@ -40,19 +38,6 @@ static enum token map_char(int character)
     return EOF_TOK;
 }
 
-enum token lexer(FILE *code, int *cursor)
-{
-    if (fseek(code, (*cursor)++, SEEK_SET) == -1)
-        err(3, "Error reading code");
-
-    int character = fgetc(code);
-    if (is_character_valid(character))
-        return map_char(character);
-
-    errx(4, "Unrecognized token \'%c\' at character %d", (char)character,
-            *cursor);
-}
-
 int is_character_valid(const int character)
 {
     for (int i = 0; i < TOKEN_NUMBER; i++)
@@ -62,4 +47,25 @@ int is_character_valid(const int character)
     }
 
     return 0;
+}
+
+enum token lexer(FILE *code, int *cursor)
+{
+    int character = 0;
+
+    do {
+        if (fseek(code, (*cursor)++, SEEK_SET) == -1)
+            err(3, "Error reading code");
+
+        character = fgetc(code);
+        if (character == EOF)
+            return EOF_TOK;
+
+    } while (character == '\n' || character == '\t');
+
+    if (is_character_valid(character))
+        return map_char(character);
+
+    errx(4, "Unrecognized token \'%c\' at character %d", (char)character,
+            *cursor);
 }
