@@ -3,6 +3,6 @@
 
 #include "parser.h"
 
-void evaluate (struct exp expression);
+void evaluate (const struct exp expression);
 
 #endif // end of DEF_EVALUATE
