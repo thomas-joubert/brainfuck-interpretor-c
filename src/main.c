@@ -3,6 +3,7 @@
 
 #include "utils.h"
 #include "lexer.h"
+#include "parser.h"
 
 int main(int argc, char **argv)
 {
@@ -12,11 +13,9 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    int cursor = 0;
     FILE *code = xfopen(argv[1], "r");
 
-    char curr = 0;
-    while ((curr = lexer(code, &cursor)) != EOF_TOK);
+    parser(code);
 
     fclose(code);
 
