@@ -2,11 +2,12 @@
 #define DEF_PARSER
 
 #include "lexer.h"
+#include <stdlib.h>
 
 struct exp
 {
     enum token type;
-    void *data;
+    struct exp *next;
 };
 
 void parser(FILE *code);
