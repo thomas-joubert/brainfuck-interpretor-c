@@ -10,16 +10,26 @@ static void free_list(struct exp *head)
     free (head->next);
 }
 
-static void parse_loop(FILE *code, int *cursor, struct exp *head)
+static struct exp *parse_loop(FILE *code, int *cursor)
 {
-    head->type = LOOP_START;
     int saved = *cursor;
 
-    struct exp *pointer = head;
+    struct exp *main = calloc(1, sizeof(struct exp));
+    struct exp *pointer = main;
 
     enum token curr = 0;
+
+    int first = 1;
+
     while ((curr = lexer(code, cursor)) != EOF_TOK && curr != LOOP_END)
     {
+        if (first)
+        {
+            main->type = curr;
+            first = 0;
+            continue;
+        }
+
         struct exp *next = calloc(1, sizeof(struct exp));
         next->type = curr;
 
@@ -27,7 +37,11 @@ static void parse_loop(FILE *code, int *cursor, struct exp *head)
         pointer = next;
 
         if (curr == LOOP_START)
-            parse_loop(code, cursor, pointer);
+        {
+            pointer->next = parse_loop(code, cursor);
+            while (pointer->next)
+                pointer = pointer->next;
+        }
     }
 
     if (curr == EOF_TOK)
@@ -37,6 +51,9 @@ static void parse_loop(FILE *code, int *cursor, struct exp *head)
     next->type = curr;
 
     pointer->next = next;
+    pointer = next;
+
+    return main;
 }
 
 void parser(FILE *code)
@@ -53,13 +70,16 @@ void parser(FILE *code)
                     cursor);
 
         if (curr == LOOP_START)
-            parse_loop(code, &cursor, &next_expression);
-        else
-            next_expression.type = curr;
+            next_expression.next = parse_loop(code, &cursor);
+
+        next_expression.type = curr;
 
         evaluate(next_expression);
 
         if (curr == LOOP_START)
+        {
             free_list(next_expression.next);
+            free(next_expression.next);
+        }
     }
 }
